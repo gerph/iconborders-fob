@@ -1,0 +1,197 @@
+/*******************************************************************
+ * File:     borders
+ * Purpose:  Drawing borders
+ * Author:   Justin Fletcher
+ * Date:     08 Nov 2002
+ ******************************************************************/
+
+#include <string.h>
+#include "swis.h"
+#include "borders.h"
+#include "graphics.h"
+
+#define BORDER_WIDTH (6)
+#define BORDER_INSET (6)
+#define MIN_WIDTH    (80)
+
+/*************************************************** Gerph *********
+ Function:     border_draw
+ Description:  Draw a border
+ Parameters:   type = button type
+               flags = button flags
+               box-> the bounding box to use
+               colours-> the colours we're using
+               ditherflags = flags to use for dithering
+ Returns:      1 if handled, 0 if not handled
+ ******************************************************************/
+int border_draw(int type, unsigned long flags,
+                 bbox_t *box, colours_t *colours,
+                 unsigned long ditherflags)
+{
+  int mind = (box->dx < box->dy) ? box->dx : box->dy;
+  /* mind contains the minimum of dx and dy so that when drawing the
+     rectangle, the shape will have no gaps in the current mode. */
+
+  if ((type==5 || type==6) && box->x1-box->x0 > MIN_WIDTH)
+  {
+    int width;
+    int r;
+
+    /* Snapcoords */
+    box->x0 = box->x0 & ~box->dx_1;
+    box->x1 = box->x1 & ~box->dx_1;
+    box->y0 = box->y0 & ~box->dy_1;
+    box->y1 = box->y1 & ~box->dy_1;
+
+    box->y1 -= 1;
+    box->x1 -= 1;
+
+    if (type==6)
+    { box->y1-=8; box->y0+=8; }
+
+    r = ((box->y1+1-box->y0)/2) & ~(mind-1);
+
+    gcol(colours[COLOUR_WELL]);
+    sector(box->x0+r,box->y0+r, box->x0+r,box->y1, box->x0+r,box->y0);
+    rect(box->x0+r,box->y0,box->x0+r+BORDER_INSET,box->y1);
+    for (width = BORDER_WIDTH; width>0; width-=mind)
+    {
+      move(box->x0+r,box->y1);
+      draw_noendpoint(box->x1,box->y1); /* top */
+      draw_noendpoint(box->x1,box->y0); /* right */
+      draw_noendpoint(box->x0+r,box->y0); /* bottom */
+      box->x0+=mind;
+      box->y0+=mind;
+      box->x1-=mind;
+      box->y1-=mind;
+    }
+    return 1;
+  }
+
+  return 0;
+}
+
+/*************************************************** Gerph *********
+ Function:     border_fill
+ Description:  Fill the inner section of a bordered region
+ Parameters:   type = button type
+               flags = button flags
+               box-> the bounding box to use
+               colours-> the colours in use
+ Returns:      1 if handled, 0 if not handled
+ ******************************************************************/
+int border_fill(int type, unsigned long flags, bbox_t *box,
+                colours_t *colours, unsigned long ditherflags)
+{
+  int x0,y0,x1,y1;
+  int mind = (box->dx < box->dy) ? box->dx : box->dy;
+
+  /* If you were using your own colours, rather than the background colour
+     of the icon (which has been set by the Wimp) you would select and
+     draw the background here. If you select other colours you would also
+     have to pay attention to the dithering flags. */
+
+  /* Now draw the rectangle background */
+  if ((type==5 || type==6) && box->x1-box->x0 > MIN_WIDTH)
+  {
+    int r;
+
+    /* Snapcoords */
+    x0 = box->x0 & ~box->dx_1;
+    x1 = box->x1 & ~box->dx_1;
+    y0 = box->y0 & ~box->dy_1;
+    y1 = box->y1 & ~box->dy_1;
+
+    y1 -= 1;
+    x1 -= 1;
+
+    if (type==6)
+    { y1-=8; y0+=8; }
+
+    r = ((y1+1-y0)/2) & ~(mind-1);
+
+    x0 += r + BORDER_INSET;
+    x1 -= BORDER_WIDTH;
+    y0 += BORDER_WIDTH;
+    y1 -= BORDER_WIDTH;
+    rect_bg(x0,y0,x1,y1);
+    return 1;
+  }
+  return 0;
+}
+
+
+/*************************************************** Gerph *********
+ Function:     border_colour
+ Description:  Set up the colour block with the correct colours
+ Parameters:   type = button type
+               flags = icon flags
+               box-> bounding box
+               cols-> the colour block to update
+               background = window background colour
+ Returns:      1 if handled, 0 if not handled
+ ******************************************************************/
+int border_colour(int type, unsigned long flags, bbox_t *box,
+                  colours_t *cols, unsigned long background)
+{
+  if ((type==5 || type==6) && box->x1-box->x0 > MIN_WIDTH)
+  {
+    switch (type)
+    {
+      case 5:
+        if (flags & (1<<21))
+          cols[COLOUR_WELL] = 0x88BB8800; /* Green when selected */
+        else
+          cols[COLOUR_WELL] = 0xFFBB0000; /* Light blue border */
+        cols[COLOUR_BG]   = 0xFFFFFF00; /* White background */
+        return 1;
+        break;
+      case 6:
+        if (flags & (1<<21))
+          cols[COLOUR_WELL] = 0x88BB8800; /* Green when selected */
+        else
+          cols[COLOUR_WELL] = 0x00BBFF00; /* Light green border */
+        cols[COLOUR_BG]   = 0xFFFFFF00; /* White background */
+        return 1;
+        break;
+    }
+  }
+  return 0;
+}
+
+/*************************************************** Gerph *********
+ Function:     border_size
+ Description:  Return the size of a border
+ Parameters:   type = button type
+               flags = button flags
+               box-> the bounding box to use
+ Returns:      1 if handled, 0 if not handled
+ ******************************************************************/
+int border_size(int type, unsigned long flags, bbox_t *box)
+{
+  /* We need to return the size of the box, once the border has been
+     applied. This is used to position text within the remaining space
+     in the icon. Remember that certain clients will expect particular
+     space to remain, but you can get away with quite a lot here.
+     In particular, if you wanted to make one edge larger than another,
+     this would be possible.
+
+     Providing differently sized icons for shaded or selected icons
+     should be reasonable, but this may provoke odd effects if clients
+     do not expect this.
+   */
+
+  if ((type==5 || type==6) && box->x1-box->x0 > MIN_WIDTH)
+  {
+    int r;
+    if (type==6)
+    { box->y1-=8; box->y0+=8; }
+    r = (box->y1-box->y0)/2;
+    box->x0+=r+BORDER_INSET;
+    box->x1-=BORDER_WIDTH;
+    box->y0+=BORDER_WIDTH;
+    box->y1-=BORDER_WIDTH;
+    return 1;
+  }
+  return 0;
+}
