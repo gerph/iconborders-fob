@@ -1,10 +1,12 @@
-; CMHG file for WimpIconBorderExample module
+; CMHG file for IconBorderFob module
 
 ; usually, we would include the global services file
 ;#include "riscos/services.h"
 ; however, that is not distributed in this example, so we just define
 ; the service we use here.
 #define Service_FilterManagerInstalled 0x87
+
+#include "VersionNum"
 
 
 ; You should give your module a sensible name which describes its purpose
