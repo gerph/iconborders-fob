@@ -10,10 +10,10 @@
 #include "borders.h"
 #include "header.h"
 
-#include "riscos/services.h"
-
-#define Filter_RegisterIconBorderFilter   (0x4264C)
-#define Filter_DeRegisterIconBorderFilter (0x4264D)
+/* We don't use the global services file */
+/* #include "riscos/services.h" */
+/* Use a private constants file instead */
+#include "consts.h"
 
 static enum {
   s_idle,   /* We're waiting to register */
@@ -33,7 +33,7 @@ _kernel_oserror *Register_Filters(void *pw)
 {
   _kernel_oserror *err;
   err = _swix(Filter_RegisterIconBorderFilter, _INR(0,3),
-                                               "Blocked borders",
+                                               "Fob borders",
                                                border_entry, pw,
                                                (1<<5) | (1<<6));
   if (err)
@@ -58,7 +58,7 @@ _kernel_oserror *Unregister_Filters(void *pw)
   {
     /* Restore to default */
     err = _swix(Filter_DeRegisterIconBorderFilter, _INR(0,2),
-                                                   "Blocked borders",
+                                                   "Fob borders",
                                                    border_entry, pw);
     if (err)
     {
