@@ -32,10 +32,21 @@ static enum {
 _kernel_oserror *Register_Filters(void *pw)
 {
   _kernel_oserror *err;
+
+  /* When the filters are registered, the mask word supplied contains
+     one bit to mask each of the button types. The filter will be called
+     if the button type specified has a bit set. In our example, we only
+     ever handle types 5 and 6 - actual pressable buttons. */
   err = _swix(Filter_RegisterIconBorderFilter, _INR(0,3),
                                                "Fob borders",
                                                border_entry, pw,
                                                (1<<5) | (1<<6));
+  /* When FilterManager registers filters, the address of the name
+     is remembered. Thus, it must be staic. Similarly, the name
+     must be at the same address when registered and deregistered -
+     we rely on the compiler to reuse these strings and so keep the
+     same address. The compiler is not required to do this, but for
+     this example, it suffices. */
   if (err)
   {
     State = s_idle;
