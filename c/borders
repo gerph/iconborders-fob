@@ -128,6 +128,25 @@ int border_fill(int type, unsigned long flags, bbox_t *box,
   return 0;
 }
 
+/*************************************************** Gerph *********
+ Function:     bright
+ Description:  Make a colour brighter
+ Parameters:   col = the colour to make brighter
+ Returns:      none
+ ******************************************************************/
+static unsigned long bright(unsigned long col)
+{
+  unsigned long r,g,b;
+  r = (col & 0x0000FF00)>>8;
+  g = (col & 0x00FF0000)>>16;
+  b = (col & 0xFF000000)>>24;
+
+#define ADD_CLAMP(var, by) var += by; if (var>255) var=255;
+  ADD_CLAMP(r, 0x20);
+  ADD_CLAMP(g, 0x20);
+  ADD_CLAMP(b, 0x40);
+  return (r<<8) | (g<<16) | (b<<24);
+}
 
 /*************************************************** Gerph *********
  Function:     border_colour
@@ -152,6 +171,16 @@ int border_colour(int type, unsigned long flags, bbox_t *box,
         else
           cols[COLOUR_WELL] = 0xFFBB0000; /* Light blue border */
         cols[COLOUR_BG]   = 0xFFFFFF00; /* White background */
+
+        /* When 'highlighted' (ie mouse over) make it brighter */
+        if (flags & (1<<23))
+        {
+          cols[COLOUR_WELL] = bright(cols[COLOUR_WELL]);
+          /* cols[COLOUR_BG] = 0xFFDDDD00; */
+          cols[COLOUR_FG] = bright(cols[COLOUR_FG]);
+          cols[COLOUR_FACE] = bright(cols[COLOUR_FACE]);
+          cols[COLOUR_OPP] = bright(cols[COLOUR_OPP]);
+        }
         return 1;
         break;
       case 6:
@@ -160,6 +189,16 @@ int border_colour(int type, unsigned long flags, bbox_t *box,
         else
           cols[COLOUR_WELL] = 0x00BBFF00; /* Light green border */
         cols[COLOUR_BG]   = 0xFFFFFF00; /* White background */
+
+        /* When 'highlighted' (ie mouse over) make it brighter */
+        if (flags & (1<<23))
+        {
+          cols[COLOUR_WELL] = bright(cols[COLOUR_WELL]);
+          /* cols[COLOUR_BG] = 0xFFDDDD00; */
+          cols[COLOUR_FG] = bright(cols[COLOUR_FG]);
+          cols[COLOUR_FACE] = bright(cols[COLOUR_FACE]);
+          cols[COLOUR_OPP] = bright(cols[COLOUR_OPP]);
+        }
         return 1;
         break;
     }
@@ -207,5 +246,23 @@ int border_size(int type, unsigned long flags, bbox_t *box)
     box->y1-=BORDER_WIDTH;
     return 1;
   }
+  return 0;
+}
+
+/*************************************************** Gerph *********
+ Function:     border_state
+ Description:  Return the state of the border renderer
+ Parameters:   type = button type
+               flags = button flags
+               box-> the bounding box to use
+ Returns:      our state flags for rendering
+ ******************************************************************/
+unsigned long border_state(int type, unsigned long flags, bbox_t *box)
+{
+  /* We need to return state flags to indicate what sort of button we provide
+     in order that the Wimp can decide what to do about it. */
+
+  if ((type==5 || type==6) && box->x1-box->x0 > MIN_WIDTH)
+    return STATE_HIGHLIGHTABLE;
   return 0;
 }
