@@ -46,8 +46,12 @@ int border_draw(int type, unsigned long flags,
     box->y1 -= 1;
     box->x1 -= 1;
 
+    /* If it is a 'default' button, we should move it in a little
+       so that it appears the same size as the 'action' buttons.
+       This just makes the button look consistent. */
     if (type==6)
-    { box->y1-=8; box->y0+=8; }
+    { box->x1-=8; box->x0+=8;
+      box->y1-=8; box->y0+=8; }
 
     r = ((box->y1+1-box->y0)/2) & ~(mind-1);
 
@@ -105,8 +109,12 @@ int border_fill(int type, unsigned long flags, bbox_t *box,
     y1 -= 1;
     x1 -= 1;
 
+    /* If it is a 'default' button, we should move it in a little
+       so that it appears the same size as the 'action' buttons.
+       This just makes the button look consistent. */
     if (type==6)
-    { y1-=8; y0+=8; }
+    { x1-=8; x0+=8;
+      y1-=8; y0+=8; }
 
     r = ((y1+1-y0)/2) & ~(mind-1);
 
@@ -184,8 +192,14 @@ int border_size(int type, unsigned long flags, bbox_t *box)
   if ((type==5 || type==6) && box->x1-box->x0 > MIN_WIDTH)
   {
     int r;
+
+    /* If it is a 'default' button, we should move it in a little
+       so that it appears the same size as the 'action' buttons.
+       This just makes the button look consistent. */
     if (type==6)
-    { box->y1-=8; box->y0+=8; }
+    { box->x1-=8; box->x0+=8;
+      box->y1-=8; box->y0+=8; }
+
     r = (box->y1-box->y0)/2;
     box->x0+=r+BORDER_INSET;
     box->x1-=BORDER_WIDTH;
