@@ -5,6 +5,7 @@
 # Program specific options:
 #
 COMPONENT  = IconBorderFob
+CLEANTARGET = cleantarget
 EXPORTS    = 
 LIBS       = 
 CDEFINES   = 
@@ -20,6 +21,7 @@ INCLUDES   = -IC:
 CLIB         = C:o.stubs
 LD      = link
 CC      = cc
+RM      = remove
 CMHG    = cmunge
 WIPE    = -wipe
 CMHGFLAGS   = ${THROWBACK} -p -DCMHG ${INCLUDES}
@@ -50,6 +52,9 @@ ${RAM_MODULE}: ${OBJS} ${CSTUBS} ${LIBS}
 
 # additional dependencies
 oz.veneer: h.header
+
+cleantarget:
+       ${RM} h.header
 
 #---------------------------------------------------------------------------
 # Dynamic dependencies:
