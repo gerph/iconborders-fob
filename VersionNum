@@ -1,24 +1,24 @@
-/* IconBorderFob (0.03) 14:46:56 13/12/2002
+/* IconBorderFob (0.04) 17:17:43 17/12/2002
  *
  * This file is automatically maintained by commit, do not edit manually.
  *
  */
-#define Module_MajorVersion_CMHG        0.03
+#define Module_MajorVersion_CMHG        0.04
 #define Module_MinorVersion_CMHG        
-#define Module_Date_CMHG                13 Dec 2002
+#define Module_Date_CMHG                17 Dec 2002
 
-#define Module_MajorVersion             "0.03"
-#define Module_Version                  3
+#define Module_MajorVersion             "0.04"
+#define Module_Version                  4
 #define Module_MinorVersion             ""
-#define Module_Date                     "13 Dec 2002"
+#define Module_Date                     "17 Dec 2002"
 
-#define Module_ApplicationDate2         "13-Dec-02"
-#define Module_ApplicationDate4         "13-Dec-2002"
+#define Module_ApplicationDate2         "17-Dec-02"
+#define Module_ApplicationDate4         "17-Dec-2002"
 
 #define Module_ComponentName            "IconBorderFob"
 #define Module_ComponentBranch          ""
 #define Module_ComponentPath            "Sources/Desktop/IconBorders/Fob"
 
-#define Module_FullVersion              "0.03"
-#define Module_FullVersionAndDate       "0.03 (13 Dec 2002)"
-#define Module_HelpVersion              "0.03 (13 Dec 2002)"
+#define Module_FullVersion              "0.04"
+#define Module_FullVersionAndDate       "0.04 (17 Dec 2002)"
+#define Module_HelpVersion              "0.04 (17 Dec 2002)"
