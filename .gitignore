@@ -5,3 +5,7 @@ oz/
 oz32/
 rm/
 rm32/
+
+# Generated files
+h/header
+
