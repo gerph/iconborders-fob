@@ -5,6 +5,10 @@ oz/
 oz32/
 rm/
 rm32/
+o/
+o32/
+aif/
+aif32/
 
 # Generated files
 h/header
