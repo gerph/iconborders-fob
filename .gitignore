@@ -1,15 +1,19 @@
 /artifacts/
 /ci-logs/
 /riscos-build/
-oz/
-oz32/
-rm/
-rm32/
-o/
-o32/
-aif/
-aif32/
 
 # Generated files
 h/header
 
+aif/*
+aif32/*
+aif64/*
+o/*
+o32/*
+o64/*
+oz/*
+oz32/*
+oz64/*
+rm/*
+rm32/*
+rm64/*
